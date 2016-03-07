@@ -1,29 +1,63 @@
-<h1><%= current_user.username %></h1>
-<ul>
-<% current_user.goals.each do |goal| %>
+<h1><%= @user.username %></h1>
 
-  <li><%= goal.description %></li>
-  <% end %>
-</ul>
+<% if current_user.id == @user.id %>
+  <ul>
+  <% @user.goals.each do |goal| %>
 
+    <li><%= goal.description %>
 
-<label> Make New Goal
+        <form action="<%= goal_url(goal) %>" method="POST">
+          <%= auth_token_input %>
+          <input type="hidden" name="_method" value="PATCH">
 
-  <form action="<%= goals_url %>" method="post">
-    <%= auth_token_input %>
-    <label>
-      Description
-      <textarea name="goal[description]" rows="8" cols="40"></textarea>
-    </label>
+          <input type="radio"
+                 name="goal[completed]"
+                 id="goal_completed"
+                 value="T"
+                <%= goal.completed ? "checked" : "" %>>
 
-    <input type="radio" name="goal[share_goal]" id="goal_public" value="T">
-    <label for="goal_public">Public?</label>
+          <label for="goal_completed">Completed?</label>
 
-   <input type="radio" name="goal[share_goal]" id="goal_private" value="F">
-   <label for="goal_private">Private?</label>
+         <input type="radio"
+                name="goal[completed]"
+                id="goal_unfinished"
+                value="F"
+                <%= !goal.completed ? "checked" : "" %>>
 
-   <input type="submit" value="Submit Goal">
+         <label for="goal_unfinished">In Progress?</label>
 
-  </form>
+         <input type="submit" value="Update Goal">
+       </form>
 
-</label>
+    </li>
+    <% end %>
+  </ul>
+
+  <label> Make New Goal
+    <form action="<%= goals_url %>" method="post">
+      <%= auth_token_input %>
+      <label>
+        Description
+        <textarea name="goal[description]" rows="8" cols="40"></textarea>
+      </label>
+
+      <input type="radio" name="goal[share_goal]" id="goal_public" value="T">
+      <label for="goal_public">Public?</label>
+
+     <input type="radio" name="goal[share_goal]" id="goal_private" value="F">
+     <label for="goal_private">Private?</label>
+
+     <input type="submit" value="Submit Goal">
+
+    </form>
+
+  </label>
+
+<% else  %>
+  <ul>
+  <% @user.goals.where(share_goal: true).each do |goal| %>
+
+    <li><%= goal.description %></li>
+    <% end %>
+  </ul>
+<% end %>
