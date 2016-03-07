@@ -1,0 +1,12 @@
+<h1>Goals!</h1>
+
+<% @users.each do |user| %>
+  <ul>
+  <li><%= user.username %>, Goals:
+      <% user.goals.each do |goal| %>
+      <ol>
+        <li><%= goal.description if goal.share_goal %></li>
+        <% end %>
+      </ol></li>
+  <% end %>
+</ul>
